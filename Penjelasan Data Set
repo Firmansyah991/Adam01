@@ -1,0 +1,125 @@
+# Adam
+Berikut ini adalah penjelasan lengkap dari file Jupyter Notebook yang kamu unggah, disusun dalam bentuk narasi tugas UTS yang bisa kamu pakai atau modifikasi:
+
+
+Penjelasan Proyek Analisis Data Keamanan Jaringan
+
+Nama: Muhammad Adam Firmansyah
+NIM: 231011403026
+Mata Kuliah: Data Maining – isikan sesuai yang ditentukan]
+Tugas: Ujian Tengah Semester (UTS)
+
+
+Tujuan Proyek
+
+Tujuan dari proyek ini adalah melakukan analisis dan klasifikasi terhadap data serangan jaringan dengan menggunakan algoritma Decision Tree. Data terdiri dari tiga jenis serangan:
+
+ MQTT Malformed
+ Recon OS Scan
+ Recon Ping Sweep
+
+
+
+Langkah-langkah dan Penjelasan Kode
+
+1. Import Library
+
+python
+import pandas as pd
+import zipfile
+
+
+Digunakan untuk memuat data (`pandas`) dan mengekstrak file ZIP (`zipfile`).
+
+2. Ekstraksi dan Pembacaan Dataset
+
+python
+with zipfile.ZipFile('drive-download-20250505T162805Z-1-001.zip', 'r') as zip_ref:
+    zip_ref.extractall('/content/')
+
+
+File ZIP diekstrak ke folder kerja.
+
+python
+dataset = pd.read_csv("MQTT Malformed.csv")
+dataset2 = pd.read_csv("Recon OS Scan.csv")
+dataset3 = pd.read_csv("Recon Ping Sweep.csv")
+
+Membaca tiga dataset berbeda yang mewakili tipe serangan.
+
+3. Penggabungan Dataset
+
+python
+hasilgabung = pd.concat([dataset, dataset2, dataset3], ignore_index=True)
+
+Ketiga dataset digabungkan menjadi satu dataset besar untuk diproses.
+
+4. Seleksi Fitur dan Label
+
+python
+x = hasilgabung.iloc[:,7:76]
+y = hasilgabung.iloc[:,83:84]
+
+
+x: fitur (fitur dipilih dari kolom 7 hingga 75)
+y: label/target (dari kolom ke-83)
+
+5. Split Data (Training dan Testing)
+
+python
+from sklearn.model_selection import train_test_split
+x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=42)
+
+
+Data dibagi 80% untuk training dan 20% untuk testing.
+
+6. Modeling dengan Decision Tree
+
+python
+from sklearn.tree import DecisionTreeClassifier
+alya = DecisionTreeClassifier(criterion='entropy', splitter='random')
+alya.fit(x_train, y_train)
+
+
+Menggunakan algoritma Decision Tree dengan metode entropy dan pembagi acak.
+
+7. Prediksi dan Evaluasi
+
+python
+y_pred = alya.predict(x_test)
+from sklearn.metrics import accuracy_score
+accuracy = accuracy_score(y_test, y_pred)
+
+
+Model diuji menggunakan data test, dan akurasinya dihitung.
+
+8. Visualisasi Decision Tree
+
+python
+from sklearn import tree
+tree.plot_tree(alya, feature_names=x.columns.values, class_names=np.array(['MQTT Malformed','Recon OS Scan','Recon Ping Sweep']), filled=True)
+plt.show()
+
+
+Membuat visualisasi pohon keputusan untuk memahami cara kerja model.
+
+9. Confusion Matrix
+
+python
+from sklearn import metrics
+conf_matrix = metrics.confusion_matrix(y_test, y_pred)
+import seaborn as sns
+sns.heatmap(conf_matrix, annot=True, xticklabels=label, yticklabels=label)
+
+
+Confusion matrix divisualisasikan dengan heatmap untuk melihat jumlah prediksi yang benar dan salah per kelas.
+
+Kesimpulan
+
+Proyek ini menunjukkan bagaimana data serangan jaringan dapat dianalisis dan diklasifikasikan menggunakan machine learning. Dengan Decision Tree Classifier, kita dapat:
+
+1. Menggabungkan dan memproses berbagai jenis data serangan
+2. Melatih model untuk mengenali pola dari masing-masing jenis serangan
+3. Mengukur kinerja model dengan akurasi dan confusion matrix
+4. Memvisualisasikan model untuk pemahaman lebih baik
+
